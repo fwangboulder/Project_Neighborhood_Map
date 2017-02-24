@@ -1,0 +1,23 @@
+{
+  "name": "Project_Neighborhood_Map",
+  "homepage": "https://github.com/fwangboulder/Project_Neighborhood_Map",
+  "authors": [
+    "Fang Wang <fwangboulder@gmail.com>"
+  ],
+  "description": "Develop a single-page application featuring a map of my neighborhood.",
+  "main": "index.html",
+  "keywords": [
+    "JavaScript",
+    "AJAX",
+    "Knockout",
+    "GoogleMapsAPI"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
