@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>South Bay Neighborhood Map</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+    <body>
+
+        <div class="container-fluid">
+            <div class="row">
+                <section class="section-nav col-md-3">
+                    <div class="row site-header">
+                        <div class="col-sm-12">
+                            <header class="">
+                                <h1>Hiking Trails Map</h1>
+                                <form>
+                                  <div class="form-group">
+                                        <label for="searchbar">Filter Trails by Name</label>
+                                        <div class="search" id="search">
+                                        <input type="text" id="search-box" name="search-box" class="form-control" data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'"  placeholder="Name of Trails">
+                                      </div>
+                                  </div>
+                                </form>
+                            </header>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                          <div class="list" id="list">
+                      			<ul class="results" id="results" data-bind="foreach: filteredList">
+                      				<li class="place" id="place" data-bind="text: name, click: bounce"></li>
+                      			</ul>
+                      		</div>
+                            <!-- <ul data-bind="foreach: filteredItems" class="main-nav">
+                              <li data-bind="text: $data.name, click: $parent.setPlace" class="main-nav-item col-md-12 col-sm-6">Link</li>
+                            </ul> -->
+                        </div>
+                    </div>
+                    <nav>
+
+                    </nav>
+                </section>
+                <section class="col-md-9 section-content">
+                <div class="row">
+                    <div class="col-sm-12" id="map">
+                      If you can read this, there has been an error loading Google Maps. Please Try Again.
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 ig" id="ig">
+                        <h4>examples</h4>
+                        <p id="ig-info" class="bg-info">Please select trails to view.</p>
+                        <div id="image-area"></div>
+                    </div>
+                </div>
+
+                </section>
+            </div>
+        </div>
+        <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBis7Zq8CzG7Bs00rnfJlSqEBNJ123x1Ak">
+        </script>
+  <script src='bower_components/knockout/dist/knockout.js'></script>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="js/script.js"> </script>
+</body>
+
+</html>
