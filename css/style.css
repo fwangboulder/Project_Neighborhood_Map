@@ -1,0 +1,60 @@
+/*// ##########################################
+// # Project 6: Neighorhood Map (Udacity Full Stack Web Developer Nanodegree)
+// # Date Started: 02/01/2017
+// # Date Completed: 02/25/2017
+// # Submitted by: Fang Wang
+// ##########################################*/
+
+/*general*/
+body {
+	margin: 0;
+	font-family:Palatino Linotype;
+}
+
+h3 {
+	margin-left: 10px;
+}
+
+.search {
+	width: 100%;
+	display: flex;
+}
+
+.search-box {
+	flex-grow: 1;
+	height: 20px;
+	font-size: 1em;
+	padding: 5px 5px;
+	border-style: solid;
+	border-color:gray;
+
+}
+
+.app {
+	width: 100%;
+	height: 100%;
+	display: flex;
+}
+
+.list {
+	order: 1;
+	flex-grow: 1;
+}
+/*map style */
+.map {
+	order: 2;
+	flex-grow: 18;
+	background-color: #fff;
+	text-align: center;
+	height: 600px;
+}
+
+.results {
+	margin: 0;
+	padding: 0;
+}
+
+.place {
+    margin: 10px;
+    list-style: none;
+}
