@@ -7,7 +7,7 @@ for awesome locations. This project marks the nearby hiking trails in south bay 
 of north CA. You can click to see the locations and read the location-related
 wikipedia artiles.
 
-Keywords: JavaScript, jQuery, AJAX, knockout, REST API, HTML, CSS, BootStrap
+Keywords: JavaScript, jQuery, AJAX, knockout, Bower, REST API, HTML, CSS, BootStrap
 
 **Installation**
 
