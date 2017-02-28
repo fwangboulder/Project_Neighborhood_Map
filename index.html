@@ -67,14 +67,18 @@
                   <div class="row">
                     <div class="wikipedia-container">
                       <h3 id="wikipedia-header">Relevant Location</br> Wikipedia Links</h3>
-                      <ul id="wikipedia-links"></ul>
+                      <ul id="wikipedia-links" data-bind="foreach: wiki">
+                        <li data-bind= "text: $data"></b></li>
+
+                      </ul>
                     </div>
                   </div>
                 </section>
+
         </div>
   <script src='bower_components/knockout/dist/knockout.js'></script>
 	<script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src='js/app.js'></script>
+  <script src='js/app2.js'></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBis7Zq8CzG7Bs00rnfJlSqEBNJ123x1Ak&callback=startApp&libraries=places" onerror="errorHandling()"></script>
 
 </body>
