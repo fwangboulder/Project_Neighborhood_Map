@@ -62,13 +62,19 @@ var initialLocations = [
 
 /// Declaring global variables now to satisfy strict mode
 var map;
-var $wikiElem = $('#wikipedia-links');
+
+//var $wikiElem = $('#wikipedia-links');// Do not use jQuery or JavaScript DOM methods.
+// global infoWindow will maintain one infowindow each time.
+var infoWindow;
 
 //Foursquare API clientID and ClientSecret variables
 var clientID;
 var clientSecret;
+//alerted will make sure not popping up multiple windows for the list of locations.
+localStorage.setItem('alerted', 'no');
 
 //Construct a Location with a series of variables
+
 var Location = function(data) {
 	var self = this;
 	this.name = data.name;
@@ -76,11 +82,11 @@ var Location = function(data) {
 	this.long = data.long;
 
 	//infowindow information
-	this.URL = "";
-	this.street = "";
-	this.city = "";
-
+	this.URL = '';
+	this.street = '';
+	this.city = '';
 	this.visible = ko.observable(true);
+
 
 
 	//foursquare api: load foursquare data (retrieve address, website and so on)
@@ -91,20 +97,26 @@ var Location = function(data) {
 		var results = data.response.venues[0];
 		self.URL = results.url;
 		if (typeof self.URL === 'undefined'){
-			self.URL = "";
+			self.URL = '';
 		}
 		self.street = results.location.formattedAddress[0];
     self.city = results.location.formattedAddress[1];
 
+
 	}).fail(function() {
+
+		var alerted=localStorage.getItem('alerted');
+		if (alerted != 'yes') {
 		alert("There was an error with the Foursquare API call. Please refresh the page and try again to load Foursquare data.");
-	});
+	};
+		localStorage.setItem('alerted','yes');
+});
 
 	this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.name + "</b></div>" +
         '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
         '<div class="content">' + self.street + "</div>" +
         '<div class="content">' + self.city + "</div>"
-	this.infoWindow = new google.maps.InfoWindow({content: self.contentString});
+	infoWindow = new google.maps.InfoWindow({content: self.contentString});
 
 	//resize the marker icon
 	var icon = {
@@ -129,18 +141,22 @@ var Location = function(data) {
 	}, this);
 
 	this.marker.addListener('click', function(){
+
 		self.contentString = '<div class="info-window-content"><div class="title"><b>' + data.name + "</b></div>" +
         '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
         '<div class="content">' + self.street + "</div>" +
         '<div class="content">' + self.city + "</div>"
-        self.infoWindow.setContent(self.contentString);
-				//alert(self.city.split(',')[0]);
+
+        infoWindow.setContent(self.contentString);
+
 				////////////after click start to load wikiData
 				// load wikipedia data
-				$wikiElem.text("");
+				//$wikiElem.text("");
+				AppViewModel.wiki.removeAll();
+
 				//time out case
 				var wikiRequestTimeout = setTimeout(function(){
-        $wikiElem.text("failed to get wikipedia resources");
+        AppViewModel.wiki.push("failed to get wikipedia resources");
       	}, 8000);
 
 					$.ajax({
@@ -155,13 +171,16 @@ var Location = function(data) {
 						} else {
 							for (var i = 0; i < articleList.length; i++) {
 								articleStr = articleList[i];
-								$wikiElem.append('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
+								//$wikiElem.append('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
+								AppViewModel.wiki.push('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
 							};
 							clearTimeout(wikiRequestTimeout);
+							//console.log(wiki);
 						}}
 					});
+		 infoWindow.open(map, this);
 
-		self.infoWindow.open(map, this);
+
 
 		self.marker.setAnimation(google.maps.Animation.BOUNCE);
       	setTimeout(function() {
@@ -181,12 +200,14 @@ function AppViewModel() {
 	this.searchTerm = ko.observable("");
 
 	this.locationList = ko.observableArray([]);
+	this.wiki = ko.observableArray([]);
 
 
 	map = new google.maps.Map(document.getElementById('map'), {
 			zoom: 10,
 			center: {lat: 37.384277, lng: -121.9687}
 	});
+
 
 	// Foursquare API settings
 	clientID = "DMVHTRSJHHJE4V3HQNAFPOTCVF133W1FQ2HHWVVXRDZDIJ1N";
@@ -218,7 +239,8 @@ function AppViewModel() {
 }
 
 function startApp() {
-	ko.applyBindings(new AppViewModel());
+	var myViewModel=new AppViewModel();
+	ko.applyBindings(myViewModel);
 }
 
 function errorHandling() {
