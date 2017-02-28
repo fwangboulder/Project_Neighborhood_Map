@@ -62,6 +62,7 @@ var initialLocations = [
 
 /// Declaring global variables now to satisfy strict mode
 var map;
+var wiki;
 
 //var $wikiElem = $('#wikipedia-links');// Do not use jQuery or JavaScript DOM methods.
 // global infoWindow will maintain one infowindow each time.
@@ -152,11 +153,11 @@ var Location = function(data) {
 				////////////after click start to load wikiData
 				// load wikipedia data
 				//$wikiElem.text("");
-				AppViewModel.wiki.removeAll();
+				wiki=[];
 
 				//time out case
 				var wikiRequestTimeout = setTimeout(function(){
-        AppViewModel.wiki.push("failed to get wikipedia resources");
+        wiki.push("failed to get wikipedia resources");
       	}, 8000);
 
 					$.ajax({
@@ -172,10 +173,10 @@ var Location = function(data) {
 							for (var i = 0; i < articleList.length; i++) {
 								articleStr = articleList[i];
 								//$wikiElem.append('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
-								AppViewModel.wiki.push('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
+								wiki.push('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
 							};
 							clearTimeout(wikiRequestTimeout);
-							//console.log(wiki);
+							console.log(wiki);
 						}}
 					});
 		 infoWindow.open(map, this);
@@ -200,7 +201,7 @@ function AppViewModel() {
 	this.searchTerm = ko.observable("");
 
 	this.locationList = ko.observableArray([]);
-	this.wiki = ko.observableArray([]);
+	this.wikiElem = ko.observableArray([]);
 
 
 	map = new google.maps.Map(document.getElementById('map'), {
@@ -217,6 +218,11 @@ function AppViewModel() {
 	initialLocations.forEach(function(locationItem){
 		self.locationList.push( new Location(locationItem));
 	});
+	if (wiki) {alert(wiki.length);}
+
+	// for (var i=0; i<wiki.length;i++) {
+	// 	self.wikiElem.push(wiki[i]);
+	// }
 
 
 	//update filteredList
