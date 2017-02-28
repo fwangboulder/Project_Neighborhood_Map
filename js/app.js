@@ -9,7 +9,7 @@
 // # Description: This is the JS file for Neighborhood map
 // #################################################################
 
-//Data
+//Model
 var initialLocations = [
 	{
 		name: 'Steven Creek Trail',
@@ -62,32 +62,28 @@ var initialLocations = [
 
 /// Declaring global variables now to satisfy strict mode
 var map;
-var wiki;
 
-//var $wikiElem = $('#wikipedia-links');// Do not use jQuery or JavaScript DOM methods.
-// global infoWindow will maintain one infowindow each time.
+//global google map infowindow, avoid multiple infoWindow problem.
 var infoWindow;
+//var $wikiElem = $('#wikipedia-links');
 
 //Foursquare API clientID and ClientSecret variables
 var clientID;
 var clientSecret;
-//alerted will make sure not popping up multiple windows for the list of locations.
+// add alerted parameter to avoid popping up multiple windows for all locations.
 localStorage.setItem('alerted', 'no');
-
 //Construct a Location with a series of variables
-
 var Location = function(data) {
 	var self = this;
 	this.name = data.name;
 	this.lat = data.lat;
 	this.long = data.long;
-
 	//infowindow information
 	this.URL = '';
 	this.street = '';
 	this.city = '';
-	this.visible = ko.observable(true);
 
+	this.visible = ko.observable(true);
 
 
 	//foursquare api: load foursquare data (retrieve address, website and so on)
@@ -103,20 +99,19 @@ var Location = function(data) {
 		self.street = results.location.formattedAddress[0];
     self.city = results.location.formattedAddress[1];
 
-
 	}).fail(function() {
-
+		//refactor code to have one alert pops up only, not for every location.
 		var alerted=localStorage.getItem('alerted');
 		if (alerted != 'yes') {
 		alert("There was an error with the Foursquare API call. Please refresh the page and try again to load Foursquare data.");
 	};
-		localStorage.setItem('alerted','yes');
-});
+		localStorage.setItem('alerted','yes');	});
 
 	this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.name + "</b></div>" +
         '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
         '<div class="content">' + self.street + "</div>" +
         '<div class="content">' + self.city + "</div>"
+	//create infoWindow with content
 	infoWindow = new google.maps.InfoWindow({content: self.contentString});
 
 	//resize the marker icon
@@ -125,6 +120,7 @@ var Location = function(data) {
 		scaledSize: new google.maps.Size(30,30)
 	};
 
+	// create marker
 	this.marker = new google.maps.Marker({
 			position: new google.maps.LatLng(data.lat, data.long),
 			map: map,
@@ -132,6 +128,7 @@ var Location = function(data) {
 			icon: icon
 	});
 
+	// show marker
 	this.showMarker = ko.computed(function() {
 		if(this.visible() === true) {
 			this.marker.setMap(map);
@@ -141,26 +138,24 @@ var Location = function(data) {
 		return true;
 	}, this);
 
+	//click marker, update infoWindow content, call wiki api
 	this.marker.addListener('click', function(){
-
 		self.contentString = '<div class="info-window-content"><div class="title"><b>' + data.name + "</b></div>" +
         '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
         '<div class="content">' + self.street + "</div>" +
         '<div class="content">' + self.city + "</div>"
-
         infoWindow.setContent(self.contentString);
-
 				////////////after click start to load wikiData
 				// load wikipedia data
+				myViewModel.wikiElem([]);
 				//$wikiElem.text("");
-				wiki=[];
-
 				//time out case
 				var wikiRequestTimeout = setTimeout(function(){
-        wiki.push("failed to get wikipedia resources");
+        //$wikiElem.text("failed to get wikipedia resources");
+				myViewModel.wikiElem.push("failed to get wikipedia resources");
       	}, 8000);
 
-					$.ajax({
+				$.ajax({
 					url: 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + self.city.split(',')[0] + '&format=json&callback=wikiCallback',
 					dataType: 'jsonp',
 					success: function(response) {
@@ -168,61 +163,60 @@ var Location = function(data) {
 						// articleList is just an array is strings
 						var articleList = response[1];
 						if (articleList.length < 1) {
-							//doing nothing
+							//if no article, doing nothing
 						} else {
+							//if not empty, load data to wikiElem
 							for (var i = 0; i < articleList.length; i++) {
 								articleStr = articleList[i];
-								//$wikiElem.append('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
-								wiki.push('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
+								// $wikiElem.append('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
+								myViewModel.wikiElem.push('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
 							};
 							clearTimeout(wikiRequestTimeout);
-							console.log(wiki);
 						}}
 					});
-		 infoWindow.open(map, this);
+		//open infoWindow, there is no need to have infoWindow close  function since I use a global infoWindow.
+		infoWindow.open(map, this);
 
-
-
+		//annimation bounce after click
 		self.marker.setAnimation(google.maps.Animation.BOUNCE);
       	setTimeout(function() {
       		self.marker.setAnimation(null);
      	}, 2100);
 
 	});
-
+	//bounce
 	this.bounce = function(place) {
 		google.maps.event.trigger(self.marker, 'click');
 	};
 };
 
+
+
 function AppViewModel() {
 	var self = this;
-
+	//pass searchTerm
 	this.searchTerm = ko.observable("");
 
+	//store location information
 	this.locationList = ko.observableArray([]);
+
+	//store wiki data
 	this.wikiElem = ko.observableArray([]);
 
-
+	//init map
 	map = new google.maps.Map(document.getElementById('map'), {
 			zoom: 10,
 			center: {lat: 37.384277, lng: -121.9687}
 	});
 
-
 	// Foursquare API settings
 	clientID = "DMVHTRSJHHJE4V3HQNAFPOTCVF133W1FQ2HHWVVXRDZDIJ1N";
 	clientSecret = "ILSGVBGJUOCBZI2SZZTWUE5CK4G2E3G5FRKVYMZGUA3I4Y2W";
 
-	//update location list
+	//update location list by calling Location constructor
 	initialLocations.forEach(function(locationItem){
 		self.locationList.push( new Location(locationItem));
 	});
-	if (wiki) {alert(wiki.length);}
-
-	// for (var i=0; i<wiki.length;i++) {
-	// 	self.wikiElem.push(wiki[i]);
-	// }
 
 
 	//update filteredList
@@ -243,9 +237,9 @@ function AppViewModel() {
 		}
 	}, self);
 }
-
+var myViewModel;
 function startApp() {
-	var myViewModel=new AppViewModel();
+	myViewModel=new AppViewModel();
 	ko.applyBindings(myViewModel);
 }
 
