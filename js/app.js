@@ -169,7 +169,7 @@ var Location = function(data) {
 							for (var i = 0; i < articleList.length; i++) {
 								articleStr = articleList[i];
 								// $wikiElem.append('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
-								myViewModel.wikiElem.push('<li><a href="http://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
+								myViewModel.wikiElem.push('<li><a href="https://en.wikipedia.org/wiki/' + '">' + articleStr + '</a></li>');
 							};
 							clearTimeout(wikiRequestTimeout);
 						}}
