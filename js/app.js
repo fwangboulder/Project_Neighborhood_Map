@@ -116,7 +116,7 @@ var Location = function(data) {
 
 	//resize the marker icon
 	var icon = {
-		url: 'http://maps.google.com/mapfiles/kml/shapes/hiker.png',
+		url: 'https://maps.google.com/mapfiles/kml/shapes/hiker.png',
 		scaledSize: new google.maps.Size(30,30)
 	};
 
@@ -156,7 +156,7 @@ var Location = function(data) {
       	}, 8000);
 
 				$.ajax({
-					url: 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + self.city.split(',')[0] + '&format=json&callback=wikiCallback',
+					url: 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + self.city.split(',')[0] + '&format=json&callback=wikiCallback',
 					dataType: 'jsonp',
 					success: function(response) {
 						// figure out why ko array isnt updating
